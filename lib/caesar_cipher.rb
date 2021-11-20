@@ -1,6 +1,5 @@
 class Cipher
-    # Input 
-
+    def input
         str = ''
 
         while str == ''
@@ -13,75 +12,32 @@ class Cipher
             puts "Okay, how many places are we going to shift by?"
                 num = gets.chomp.to_i
         end
-        
-    if num > 26
-        num = num % 26
+        num = num % 26 if num > 26
+        convert_to_cipher(str, num)
     end
 
-    # End of input
-
-    # Create alphabet hashes
-
-        lowercase_counter = 1
-        lowercase_abc_array = []
-
-        26.times do |x|
-            lowercase_abc_array.push((x+97).chr)
-        end
-
-        lowercase_hash = lowercase_abc_array.reduce(Hash.new(0)) do |letter,code|
-            letter[code] = lowercase_counter
-            lowercase_counter += 1
-            letter
-        end
-        
-        uppercase_counter = 1
-        uppercase_abc_array = []
-        
-        26.times do |x|
-            uppercase_abc_array.push((x+65).chr)
-        end
-
-        uppercase_hash = uppercase_abc_array.reduce(Hash.new(0)) do |letter,code|
-            letter[code] = uppercase_counter
-            uppercase_counter += 1
-            letter
-        end
-
-    # End of creating alphabet hashes
-
-    # Convert input into cipher code
-
+    def convert_to_cipher(str, shift_by)
         input_arr = str.split('')
-    
+        shift_by = shift_by % 26 if shift_by > 26
         output_arr = []
 
         final_output = input_arr.each do |letter|
-
-            low_hash_index = lowercase_hash[letter] + num
-            upper_hash_index = uppercase_hash[letter] + num
-
-            # Allows for numbers over 26
-            if low_hash_index > 26
-                low_hash_index = low_hash_index % 26
+            character_value = letter.ord + shift_by
+            if letter.ord >= 65 && letter.ord <= 90
+                character_value = 65 + (character_value % 91) if character_value > 90
+                letter = character_value.chr
             end
-            if upper_hash_index > 26
-                upper_hash_index = upper_hash_index % 26
+            if letter.ord >= 97 && letter.ord <= 122
+                character_value = 97 + (character_value % 123) if character_value > 122
+                letter = character_value.chr
             end
-
-            # Searches hashes for a matching uppercase or lowercase letter and adds results to final array.
-            if lowercase_hash.invert[lowercase_hash[letter]] == letter
-                output_arr.push(lowercase_hash.invert[low_hash_index])
-            elsif uppercase_hash.invert[uppercase_hash[letter]] == letter
-                output_arr.push(uppercase_hash.invert[upper_hash_index])
-            else 
-                output_arr.push(letter)
-            end
-        
+           
+            output_arr.push(letter)
         end
-
-    # End of converting input into cipher code
-
-    puts output_arr.join('')
-
+        output_arr.join('')
+    end
 end 
+
+cipher = Cipher.new
+
+p cipher.input
